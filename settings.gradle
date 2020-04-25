@@ -1,0 +1,3 @@
+include ':app', ':geeknews', ':testmap', ':testyoumeng'
+//include ':luckymoney'
+rootProject.name='Jy_7_4_20'
