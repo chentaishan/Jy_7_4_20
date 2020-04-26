@@ -29,4 +29,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="微信" />
+
+    <Button
+        android:id="@+id/click4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="微博登录" />
 </LinearLayout>

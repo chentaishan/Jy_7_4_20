@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -12,9 +13,13 @@ import android.widget.Toast;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
 import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
+
+import java.util.Map;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -32,13 +37,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Manifest.permission.ACCESS_WIFI_STATE
 
     };
+    private Button mClick4;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-        PermissionsUtil.requestPermission(this, new PermissionListener(){
+        PermissionsUtil.requestPermission(this, new PermissionListener() {
 
             @Override
             public void permissionGranted(@NonNull String[] permission) {
@@ -49,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void permissionDenied(@NonNull String[] permission) {
 
             }
-        },permissions);
+        }, permissions);
         initView();
     }
 
@@ -62,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mClick3.setOnClickListener(this);
         mClick = (Button) findViewById(R.id.click);
         mClick.setOnClickListener(this);
+        mClick4 = (Button) findViewById(R.id.click4);
+        mClick4.setOnClickListener(this);
     }
 
 
@@ -76,10 +85,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.click:
                 // TODO 20/04/25
-                new ShareAction(MainActivity.this).withText("hello").setDisplayList(SHARE_MEDIA.SINA,SHARE_MEDIA.QQ,SHARE_MEDIA.WEIXIN)
+                new ShareAction(MainActivity.this).withText("hello").setDisplayList(SHARE_MEDIA.SINA, SHARE_MEDIA.QQ, SHARE_MEDIA.WEIXIN)
                         .setCallback(shareListener).open();
                 break;
-             case R.id.click1:
+            case R.id.click1:
                 // TODO 20/04/25
                 break;
             case R.id.click2:
@@ -88,9 +97,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.click3:
                 // TODO 20/04/25
                 break;
+            case R.id.click4:// TODO 20/04/26
+
+                login();
+
+                break;
             default:
                 break;
         }
+    }
+
+    private static final String TAG = "MainActivity";
+    private void login() {
+
+        UMShareAPI.get(this) .getPlatformInfo(MainActivity.this, SHARE_MEDIA.SINA, new UMAuthListener() {
+            @Override
+            public void onStart(SHARE_MEDIA share_media) {
+                Log.d(TAG, "onStart: ");
+            }
+            @Override
+            public void onComplete(SHARE_MEDIA share_media, int i, Map<String, String> map) {
+                Log.d(TAG, "onComplete: ");
+                for (Map.Entry<String,String> entry:map.entrySet()) {
+                    System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+                }
+            }
+            @Override
+            public void onError(SHARE_MEDIA share_media, int i, Throwable throwable) {
+                Log.d(TAG, "onError: ");
+            }
+            @Override
+            public void onCancel(SHARE_MEDIA share_media, int i) {
+                Log.d(TAG, "onCancel: ");
+            }
+        });
+
     }
 
     private UMShareListener shareListener = new UMShareListener() {
@@ -109,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          */
         @Override
         public void onResult(SHARE_MEDIA platform) {
-            Toast.makeText(MainActivity.this,"成功  了",Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "成功  了", Toast.LENGTH_LONG).show();
         }
 
         /**
@@ -119,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          */
         @Override
         public void onError(SHARE_MEDIA platform, Throwable t) {
-            Toast.makeText(MainActivity.this,"失    败"+t.getMessage(),Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "失    败" + t.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         /**
@@ -128,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          */
         @Override
         public void onCancel(SHARE_MEDIA platform) {
-            Toast.makeText(MainActivity.this,"取消   了",Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "取消   了", Toast.LENGTH_LONG).show();
 
         }
     };
