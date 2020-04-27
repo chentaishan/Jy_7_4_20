@@ -1,3 +1,3 @@
-include ':app', ':geeknews', ':testmap', ':testyoumeng'
-//include ':luckymoney'
+include ':app', ':geeknews',  ':testyoumeng', ':testjpush', ':testmap'
+include ':luckymoney'
 rootProject.name='Jy_7_4_20'
