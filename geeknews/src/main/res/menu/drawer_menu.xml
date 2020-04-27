@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <item android:id="@+id/one"  android:title="标题" android:icon="@mipmap/ic_daily_comment"/>
+    <item android:id="@+id/zhihu"  android:title="知乎日报" android:icon="@mipmap/ic_drawer_zhihu"/>
+    <item android:id="@+id/wx"  android:title="微信精选" android:icon="@mipmap/ic_drawer_wechat"/>
+    <item android:id="@+id/gank"  android:title="干货集中营" android:icon="@mipmap/ic_drawer_gank"/>
+    <item android:id="@+id/gold"  android:title="稀土掘金" android:icon="@mipmap/ic_drawer_gold"/>
+    <item android:id="@+id/vtex"  android:title="V2EX" android:icon="@mipmap/ic_drawer_vtex"/>
 
 </menu>
