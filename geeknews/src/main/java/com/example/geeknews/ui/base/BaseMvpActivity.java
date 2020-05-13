@@ -13,11 +13,14 @@ public abstract class BaseMvpActivity<P extends BasePresenter> extends BaseActiv
     protected void initView() {
         super.initView();
 
+        initViewActivity();
         presenter =initPresenter();
         if (presenter!=null){
             presenter.attachView(this);
         }
     }
+
+    protected abstract void initViewActivity();
 
     protected abstract P initPresenter();
 

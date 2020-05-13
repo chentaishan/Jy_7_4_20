@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -54,10 +56,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             "芦凯涛",
             "张旭"
     };
-    private CheckBox mDoubleClear;
-    boolean isCheck;
 
-    String selectedNames = new String();
+    int index;
+
+    Handler handler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            if (isLoading) {
+                index = index % names.length;
+                Log.d(TAG, "handleMessage: " + index);
+                mResult.setText(names[index]);
+                index++;
+                handler.sendMessageDelayed(Message.obtain(), 50);
+            }
+        }
+    };
+    private boolean isLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,15 +87,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mClick = (Button) findViewById(R.id.click);
         mClick.setOnClickListener(this);
         mResult = (TextView) findViewById(R.id.result);
-        mDoubleClear = (CheckBox) findViewById(R.id.clear_double);
 
-        mDoubleClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                isCheck= !isCheck;
-            }
-        });
     }
 
     @Override
@@ -86,10 +96,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.click:
                 // TODO 20/04/24
-                if (isAnimFinish) {
-                    getLuckyPerson();
 
+                if (!isLoading) {
+                    isLoading = true;
+                    mClick.setText("停止");
+                } else {
+                    isLoading = false;
+                    mClick.setText("开始");
                 }
+
+                handler.sendMessage(Message.obtain());
+
                 break;
             default:
                 break;
@@ -98,26 +115,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String TAG = "MainActivity";
 
-    private void getLuckyPerson() {
 
-        Random random = new Random();
-        int pos = random.nextInt(names.length);
-
-        String name = names[pos];
-        if (isCheck&&selectedNames.contains(name)){
-            getLuckyPerson();
-
-            return;
-        }
-        selectedNames =name+",";
-        Log.d(TAG, "getLuckyPerson: " + name);
-
-        mResult.setText(name);
-
-        anim();
-    }
-
-    boolean isAnimFinish =true;
+    boolean isAnimFinish = true;
 
     private void anim() {
 

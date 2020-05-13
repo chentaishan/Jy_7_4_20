@@ -44,5 +44,33 @@ public class DailyPresenter extends BasePresenter<DailyContract.View> implements
 
     }
 
+    @Override
+    public void getBeforeListData(String date) {
+        ResourceSubscriber<DailyListBean> resourceSubscriber = HttpManager.getInstance().getApiService(ApiService.zhihuUrl, ApiService.class)
+                .getBeforeListData(date)
+                .compose(RxUtils.<DailyListBean>rxScheduler())
+                .subscribeWith(new ResourceSubscriber<DailyListBean>() {
+
+                    @Override
+                    public void onNext(DailyListBean o) {
+
+                        view.beforeSuccessUI(o);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                        view.errorUI(t.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+        addSubscribe(resourceSubscriber);
+    }
+
 
 }

@@ -14,11 +14,16 @@ public abstract class BaseMvpFragment<P extends BasePresenter> extends BaseFragm
     protected P presenter;
     @Override
     protected void initView(View root) {
+
+        initViewFragment(root);
         presenter= initPresent();
         if (presenter!=null){
             presenter.attachView(this);
         }
     }
+
+    protected abstract void initViewFragment(View root);
+
 
     protected abstract P initPresent();
 

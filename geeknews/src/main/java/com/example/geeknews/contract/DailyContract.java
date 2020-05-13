@@ -12,11 +12,13 @@ public interface DailyContract {
 
         void successUI(T t);
 
+        void beforeSuccessUI(T t);
 
     }
 
       interface Presenter extends IBasePresenter<View> {
 
         void getDailyListData();
+        void  getBeforeListData(String date);
     }
 }

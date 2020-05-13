@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:title="资讯">
 
-    <item android:id="@+id/zhihu"  android:title="知乎日报" android:icon="@mipmap/ic_drawer_zhihu"/>
-    <item android:id="@+id/wx"  android:title="微信精选" android:icon="@mipmap/ic_drawer_wechat"/>
-    <item android:id="@+id/gank"  android:title="干货集中营" android:icon="@mipmap/ic_drawer_gank"/>
-    <item android:id="@+id/gold"  android:title="稀土掘金" android:icon="@mipmap/ic_drawer_gold"/>
-    <item android:id="@+id/vtex"  android:title="V2EX" android:icon="@mipmap/ic_drawer_vtex"/>
+        <menu>
 
+            <item
+                android:id="@+id/zhihu"
+                android:checked="true"
+                android:checkable="true"
+                android:icon="@mipmap/ic_drawer_zhihu"
+                android:title="知乎日报" />
+            <item
+                android:id="@+id/wx"
+                android:checkable="true"
+                android:icon="@mipmap/ic_drawer_wechat"
+                android:title="微信精选" />
+            <item
+                android:id="@+id/gank"
+                android:checkable="true"
+                android:icon="@mipmap/ic_drawer_gank"
+                android:title="干货集中营" />
+            <item
+                android:id="@+id/gold"
+                android:icon="@mipmap/ic_drawer_gold"
+                android:checkable="true"
+                android:title="稀土掘金" />
+            <item
+                android:id="@+id/vtex"
+                android:checkable="true"
+                android:icon="@mipmap/ic_drawer_vtex"
+                android:title="V2EX" />
+
+        </menu>
+    </item>
 </menu>

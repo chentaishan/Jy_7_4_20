@@ -9,8 +9,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.bumptech.glide.Glide;
@@ -55,9 +57,18 @@ public class MainActivity extends BaseActivity {
     // 当前点击的类型
     private int type;
 
+    /**
+     * 记录当前被选择的菜单，
+     * 当点击其他菜单时，把其他菜单置为选中状态
+     * 同时把上一个菜单置为未选中状态
+     */
+    private MenuItem lastMenuItem;
+
     @Override
     protected void initView() {
         super.initView();
+
+
 
         setTitle("知乎日报");
         setSupportActionBar(toolbar);
@@ -85,41 +96,34 @@ public class MainActivity extends BaseActivity {
                 .commit();
         lastFragment = zhihuFragment;
 
+        lastMenuItem = navigation.getMenu().findItem(R.id.zhihu);
+
         navigation.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
 
                     case R.id.zhihu:
-                        if (!menuItem.isChecked()){
-                            menuItem.setChecked(true);
-                            type = ZHIHU_TYPE;
-                            switchFragment();
-                        }
-
-
-
+                        type = ZHIHU_TYPE;
                         break;
                     case R.id.wx:
                         type = WEIXIN_TYPE;
-                        switchFragment();
                         break;
                     case R.id.gank:
                         type = GANK_TYPE;
-                        switchFragment();
-
                         break;
                     case R.id.gold:
                         type = WEIXIN_TYPE;
-                        switchFragment();
                         break;
                     case R.id.vtex:
                         type = WEIXIN_TYPE;
-                        switchFragment();
                         break;
 
                 }
+                switchFragment(menuItem);
+//                关闭侧滑
                 drawerLayout.closeDrawer(Gravity.LEFT);
+
                 return false;
             }
         });
@@ -128,6 +132,7 @@ public class MainActivity extends BaseActivity {
 
     /**
      * 获取当前 点击的fragment 对象
+     *
      * @return
      */
     private Fragment getCurrFragment() {
@@ -160,15 +165,26 @@ public class MainActivity extends BaseActivity {
         return null;
     }
 
-
-    public void switchFragment() {
+    private static final String TAG = "MainActivity";
+    public void switchFragment(MenuItem menuItem) {
         Fragment currFragment = getCurrFragment();
-
-                FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+        if (currFragment==lastFragment){
+            Log.d(TAG, "switchFragment: 现在就是这个页面，别点了");
+            return;
+        }
+        FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
         fragmentTransaction.show(currFragment)
                 .hide(lastFragment)
                 .commit();
         lastFragment = currFragment;
+//        处理上个菜单的状态
+
+        lastMenuItem.setChecked(false);
+
+        lastMenuItem = menuItem;
+
+
+        menuItem.setChecked(true);
 
     }
 

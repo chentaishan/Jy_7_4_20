@@ -20,11 +20,6 @@
             android:text="幸运转--转起来" />
 
 
-        <CheckBox
-            android:id="@+id/clear_double"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="是否避免重复"></CheckBox>
     </LinearLayout>
 
 
