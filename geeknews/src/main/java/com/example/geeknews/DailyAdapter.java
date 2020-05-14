@@ -133,6 +133,7 @@ public class DailyAdapter extends RecyclerView.Adapter {
 
             }
             ((ListViewHolder) viewHolder).title.setText(storiesBean.getTitle());
+
             ((ListViewHolder) viewHolder).itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

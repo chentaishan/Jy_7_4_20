@@ -24,6 +24,8 @@ import com.example.geeknews.ui.base.BaseActivity;
 import com.example.geeknews.ui.base.BaseMvpActivity;
 import com.example.geeknews.ui.fragment.DailyFragment;
 import com.example.geeknews.ui.fragment.GankFragment;
+import com.example.geeknews.ui.fragment.GoldFragment;
+import com.example.geeknews.ui.fragment.V2exMainFragment;
 import com.example.geeknews.ui.fragment.WxFragment;
 import com.example.geeknews.ui.fragment.ZhihuFragment;
 
@@ -63,6 +65,8 @@ public class MainActivity extends BaseActivity {
      * 同时把上一个菜单置为未选中状态
      */
     private MenuItem lastMenuItem;
+    private GoldFragment goldFragment;
+    private V2exMainFragment v2exFragment;
 
     @Override
     protected void initView() {
@@ -82,6 +86,8 @@ public class MainActivity extends BaseActivity {
         zhihuFragment = new ZhihuFragment();
         wxFragment = new WxFragment();
         gankFragment = new GankFragment();
+        goldFragment = new GoldFragment();
+        v2exFragment = new V2exMainFragment();
 
         supportFragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
@@ -90,9 +96,13 @@ public class MainActivity extends BaseActivity {
                 .add(R.id.content, zhihuFragment)
                 .add(R.id.content, wxFragment)
                 .add(R.id.content, gankFragment)
+                .add(R.id.content, goldFragment)
+                .add(R.id.content, v2exFragment)
                 .show(zhihuFragment)
                 .hide(wxFragment)
                 .hide(gankFragment)
+                .hide(goldFragment)
+                .hide(v2exFragment)
                 .commit();
         lastFragment = zhihuFragment;
 
@@ -113,10 +123,10 @@ public class MainActivity extends BaseActivity {
                         type = GANK_TYPE;
                         break;
                     case R.id.gold:
-                        type = WEIXIN_TYPE;
+                        type = GOLD_TYPE;
                         break;
                     case R.id.vtex:
-                        type = WEIXIN_TYPE;
+                        type = V2EX_TYPE;
                         break;
 
                 }
@@ -154,11 +164,20 @@ public class MainActivity extends BaseActivity {
                 }
                 return gankFragment;
             case GOLD_TYPE:
-                break;
+
+                if (goldFragment == null) {
+                    goldFragment = new GoldFragment();
+                }
+                return goldFragment;
+
             case V2EX_TYPE:
-                break;
-            default:
-                return null;
+
+                if (v2exFragment == null) {
+                    v2exFragment = new V2exMainFragment();
+                }
+                return v2exFragment;
+
+
 
         }
 

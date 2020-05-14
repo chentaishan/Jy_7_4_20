@@ -10,8 +10,10 @@ import com.example.geeknews.bean.SectionListBean;
 import com.example.geeknews.bean.ZhihuDetailBean;
 
 import io.reactivex.Flowable;
+import okhttp3.ResponseBody;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
 
@@ -42,7 +44,7 @@ public interface ApiService {
      * http://news-at.zhihu.com/api/4/news/9713242
      */
     @GET("api/4/news/{id}")
-    Flowable<ZhihuDetailBean> getDetailInfo(@Path("id") int id);
+    Flowable<ZhihuDetailBean> getDailyDetailInfo(@Path("id") int id);
 
 
     String cartUrl=" http://cdwan.cn/";
@@ -71,5 +73,10 @@ public interface ApiService {
     @GET("api/data/%E7%A6%8F%E5%88%A9/20/3")
     Flowable<GirlBean> getGirlsData();
 
+
+    String TAB_HOST = "https://www.v2ex.com/?tab=";
+
+    @GET("")
+    Flowable<ResponseBody> getV2EXListData(@Query("tab") String type);
 
 }

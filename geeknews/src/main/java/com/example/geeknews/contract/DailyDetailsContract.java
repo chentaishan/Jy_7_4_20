@@ -6,9 +6,9 @@ import com.example.geeknews.bean.CartBean;
 import com.example.geeknews.bean.ZhihuDetailBean;
 
 /**
- * 购物车   契约类
+ * 日报详情   契约类
  */
-public interface ZhihuDetailsContract {
+public interface DailyDetailsContract {
     interface View extends IBaseView{
         void successUI(ZhihuDetailBean zhihuDetailBean);
 
@@ -16,7 +16,7 @@ public interface ZhihuDetailsContract {
 
     interface Presenter extends IBasePresenter<View>{
 
-        void getZhihuListData(String id);
+        void getDailyDetailsData(String id);
     }
 
 }
