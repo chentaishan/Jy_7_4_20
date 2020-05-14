@@ -2,41 +2,44 @@ package com.example.geeknews.ui;
 
 
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.geeknews.R;
 import com.example.geeknews.bean.ZhihuDetailBean;
-import com.example.geeknews.contract.ZhihuDetailsContract;
+import com.example.geeknews.contract.DailyDetailsContract;
 import com.example.geeknews.presenter.DailyDetailsPresenter;
 import com.example.geeknews.ui.base.BaseMvpActivity;
 import com.example.geeknews.utils.HtmlUtil;
 
-public class DailyDetailsActivity extends BaseMvpActivity<DailyDetailsPresenter> implements ZhihuDetailsContract.View {
-
-
-    private ImageView mImgTop;
+public class DailyDetailsActivity extends BaseMvpActivity<DailyDetailsPresenter> implements DailyDetailsContract.View, View.OnClickListener {
+    private ImageView mImg;
     private Toolbar mToolbar;
+    private WebView mWebView;
+    private NestedScrollView mScrollview;
     private AppBarLayout mAppbar;
-    private WebView mWebview;
+    private FloatingActionButton mFab;
 
     @Override
     public void successUI(ZhihuDetailBean zhihuDetailBean) {
 
-        Glide.with(this).load(zhihuDetailBean.getImage()).into(mImgTop);
-
-        // 加载css 和js
-        String htmlData = HtmlUtil.createHtmlData(zhihuDetailBean.getBody(),zhihuDetailBean.getCss(),zhihuDetailBean.getJs());
-
-        // 加载网页内容
-        mWebview.loadData(htmlData, HtmlUtil.MIME_TYPE,HtmlUtil.ENCODING);
-
+        // 图片 展示  title
+        Glide.with(this).load(zhihuDetailBean.getImage()).into(mImg);
 
         mToolbar.setTitle(zhihuDetailBean.getTitle());
-        setSupportActionBar(mToolbar);
 
+        setSupportActionBar(mToolbar);
+        // webView 展示  JavaScript  css
+
+
+        String htmlData = HtmlUtil.createHtmlData(zhihuDetailBean.getBody(), zhihuDetailBean.getCss(), zhihuDetailBean.getJs());
+
+        mWebView.loadData(htmlData,HtmlUtil.MIME_TYPE,HtmlUtil.ENCODING);
 
     }
 
@@ -47,10 +50,13 @@ public class DailyDetailsActivity extends BaseMvpActivity<DailyDetailsPresenter>
 
     @Override
     protected void initViewActivity() {
-        mImgTop = (ImageView) findViewById(R.id.top_img);
+        mImg = (ImageView) findViewById(R.id.top_img);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mWebView = (WebView) findViewById(R.id.webview);
+
         mAppbar = (AppBarLayout) findViewById(R.id.appbar);
-        mWebview = (WebView) findViewById(R.id.webview);
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setOnClickListener(this);
 
 
     }
@@ -64,7 +70,7 @@ public class DailyDetailsActivity extends BaseMvpActivity<DailyDetailsPresenter>
     protected void initData() {
 
         String id = getIntent().getIntExtra("id",-1)+"";
-        presenter.getZhihuListData(id);
+        presenter.getDailyDetailsData(id);
     }
 
     @Override
@@ -73,6 +79,14 @@ public class DailyDetailsActivity extends BaseMvpActivity<DailyDetailsPresenter>
     }
 
 
-
-
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab:
+                // TODO 20/05/14
+                break;
+            default:
+                break;
+        }
+    }
 }
