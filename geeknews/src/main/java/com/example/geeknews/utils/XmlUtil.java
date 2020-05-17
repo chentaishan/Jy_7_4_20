@@ -5,6 +5,7 @@ import android.support.v4.util.ArrayMap;
 
 /**
  * Created by codeest on 16/12/30.
+ *
  */
 
 public class XmlUtil {
@@ -29,7 +30,9 @@ public class XmlUtil {
                             }
                         }
                         else if ("node".equals(xmlResourceParser.getName())){
+                            // 获取节点内容
                             String node = xmlResourceParser.getAttributeValue(0);
+                            //获取节点名称
                             String nodeName = xmlResourceParser.nextText();
                             if (nodeMap != null) {
                                 nodeMap.put(node, nodeName);

@@ -2,14 +2,15 @@ package com.example.geeknews.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.example.geeknews.R;
-import com.example.geeknews.adapter.VtexPagerAdapter;
 import com.example.geeknews.ui.NodeActivity;
 import com.example.geeknews.ui.base.BaseFragment;
 import com.example.geeknews.utils.Constants;
@@ -25,22 +26,44 @@ public class V2exMainFragment extends BaseFragment {
     public static String[] type = {"tech", "creative", "play", "apple", "jobs", "deals", "city", "qna", "hot", "all", "r2"};
     List<Fragment> fragments = new ArrayList<>();
 
+
     @Override
     protected void initData() {
 
+        for (int i = 0; i < typeStr.length; i++) {
+            VtexPagerFragment vtexPagerFragment = new VtexPagerFragment();
 
-        mVtexMainTab.setTabMode(TabLayout.MODE_SCROLLABLE);
-        mVtexMainTab.setupWithViewPager(mVtexMainVp);
-        for (int i = 0; i < type.length; i++) {
-            VtexPagerFragment fragment = new VtexPagerFragment();
             Bundle bundle = new Bundle();
-            bundle.putString(Constants.IT_VTEX_TYPE, type[i]);
-            fragment.setArguments(bundle);
+            bundle.putString(Constants.IT_VTEX_TYPE,type[i]);
+            vtexPagerFragment.setArguments(bundle);
+            fragments.add(vtexPagerFragment);
+
             mVtexMainTab.addTab(mVtexMainTab.newTab());
-            fragments.add(fragment);
+
         }
-        VtexPagerAdapter mAdapter = new VtexPagerAdapter(getChildFragmentManager(), fragments);
-        mVtexMainVp.setAdapter(mAdapter);
+        // viewPager fragment  tablayout
+        mVtexMainVp.setAdapter(new FragmentPagerAdapter(getChildFragmentManager()) {
+            @Override
+            public Fragment getItem(int i) {
+                return fragments.get(i);
+            }
+
+            @Override
+            public int getCount() {
+                return fragments.size();
+            }
+
+            @Nullable
+            @Override
+            public CharSequence getPageTitle(int position) {
+                return typeStr[position];
+            }
+        });
+
+        mVtexMainTab.setupWithViewPager(mVtexMainVp);
+
+
+
     }
 
     @Override
@@ -51,12 +74,16 @@ public class V2exMainFragment extends BaseFragment {
         mVtexMainVp = (ViewPager) itemView.findViewById(R.id.vp_vtex_main);
 
 
+        mVtexMainTab.setTabMode(TabLayout.MODE_SCROLLABLE);
+
         mVtexMenuIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 startActivity(new Intent(getActivity(), NodeActivity.class));
             }
         });
+
     }
 
     @Override

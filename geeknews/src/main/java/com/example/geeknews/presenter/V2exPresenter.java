@@ -15,6 +15,7 @@ import com.example.geeknews.utils.RxUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -32,84 +33,8 @@ import okhttp3.ResponseBody;
  * 购物车 的P 层实现类
  */
 public class V2exPresenter extends BasePresenter<V2exContract.View> implements V2exContract.Presenter {
-    @Override
-    public void getV2exListData(String type) {
-        Flowable.just(ApiService.TAB_HOST+type).subscribeOn(Schedulers.io())
-                .map(new Function<String, Document>() {
-                    @Override
-                    public Document apply(String s) throws Exception {
-                        
-                        return Jsoup.connect(s).get();
-                    }
-                })
-                .map(new Function<Document, List<V2exListBean>>() {
-                    @Override
-                    public List<V2exListBean> apply(Document doc) throws Exception {
-                        List<V2exListBean> mList = new ArrayList<>();
-                        Elements itemElements = doc.select("div.cell.item");    //item根节点
-                        int count = itemElements.size();
-                        for (int i = 0; i < count; i++) {
-                            Elements titleElements = itemElements.get(i).select("div.cell.item table tr td span.item_title > a");   //标题
-                            Elements imgElements = itemElements.get(i).select("div.cell.item table tr td img.avatar");              //头像
-                            Elements commentElements = itemElements.get(i).select("div.cell.item table tr a.count_livid");          //评论数
 
 
-                            Elements nodeElements = itemElements.get(i).select("div.cell.item table tr span.small.fade a.node");    //节点
-                            Elements nameElements = itemElements.get(i).select("div.cell.item table tr span.small.fade strong a");  //作者 & 最后回复
-                            Elements timeElements = itemElements.get(i).select("div.cell.item table tr span.small.fade");           //更新时间
-
-                            V2exListBean bean = new V2exListBean();
-
-
-                            if (titleElements.size() > 0) {
-                                bean.setTitle(titleElements.get(0).text());
-                                bean.setTopicId(parseId(titleElements.get(0).attr("href")));
-                            }
-                            if (imgElements.size() > 0) {
-                                bean.setImgUrl(parseImg(imgElements.get(0).attr("src"))); // http:
-                            }
-                            if (nodeElements.size() > 0) {
-                                bean.setNode(nodeElements.get(0).text());
-                            }
-                            if (nameElements.size() > 0) {
-                                bean.setName(nameElements.get(0).text());
-                            }
-                            //存在没有 最后回复者、评论数、更新时间的情况
-                            if (nameElements.size() > 1) {
-                                bean.setLastUser(nameElements.get(1).text());
-                            }
-                            if (commentElements.size() > 0) {
-                                bean.setCommentNum(Integer.valueOf(commentElements.get(0).text()));
-                            }
-                            if (timeElements.size() > 1) {
-                                bean.setUpdateTime(parseTime(timeElements.get(1).text()));
-                            }
-
-                            mList.add(bean);
-                        }
-                        return mList;
-                    }
-                }). observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new ResourceSubscriber<List<V2exListBean>>() {
-
-                    @Override
-                    public void onNext(List<V2exListBean> o) {
-
-                        view.successUI(o);
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-
-                        view.errorUI(t.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
     private String parseId(String str) {
         int idEnd = str.indexOf("#");
         return str.substring(3, idEnd);
@@ -126,7 +51,67 @@ public class V2exPresenter extends BasePresenter<V2exContract.View> implements V
     public static String parseImg(String str) {
         return "http:" + str;
     }
+
     private static final String TAG = "V2exPresenter";
 
 
+    @Override
+    public void getV2exListData(String type) {
+
+        //首先加载网页
+
+        //https://www.v2ex.com/?tab=creative
+        Flowable.just(ApiService.TAB_HOST + type)
+                .subscribeOn(Schedulers.io())
+                .map(new Function<String, Document>() {
+                    @Override
+                    public Document apply(String s) throws Exception {
+                        return Jsoup.connect(s).get();
+                    }
+                })
+                .map(new Function<Document, List<V2exListBean>>() {
+                    @Override
+                    public List<V2exListBean> apply(Document document) throws Exception {
+                        // 把Doucment 数据 转成 listbean
+                        List<V2exListBean> listBeans = new ArrayList<>();
+
+                        Elements elements = document.select("div.cell.item");
+                        for (int i = 0; i < elements.size(); i++) {
+                            Element element = elements.get(i);
+                            String imgUrl= element.select("table tr td a img.avatar").get(0).attr("src");
+                            String title= element.select("table tr td span.item_title  > a").text();
+
+                            V2exListBean v2exListBean = new V2exListBean();
+
+                            v2exListBean.setTitle(title);
+                            v2exListBean.setImgUrl(imgUrl);
+                            Log.d(TAG, "apply: "+imgUrl+"----title="+title);
+
+                            listBeans.add(v2exListBean);
+                        }
+
+                        return listBeans;
+                    }
+                }).observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new ResourceSubscriber<List<V2exListBean>>() {
+                    @Override
+                    public void onNext(List<V2exListBean> v2exListBeanList) {
+
+                        view.successUI(v2exListBeanList);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                        view.errorUI(t.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+
+    }
 }

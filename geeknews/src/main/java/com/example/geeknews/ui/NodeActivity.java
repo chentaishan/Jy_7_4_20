@@ -16,6 +16,10 @@ import com.example.geeknews.R;
 import com.example.geeknews.adapter.NodeAdapter;
 import com.example.geeknews.utils.XmlUtil;
 
+import org.xmlpull.v1.XmlPullParser;
+
+import javax.xml.parsers.SAXParser;
+
 public class NodeActivity extends AppCompatActivity {
 
     private ArrayMap<String, ArrayMap<String, String>> map;
@@ -37,7 +41,6 @@ public class NodeActivity extends AppCompatActivity {
         try {
             map = XmlUtil.parseNodes(xmlParser);
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,16 +49,19 @@ public class NodeActivity extends AppCompatActivity {
     }
 
     private static final String TAG = "NodeActivity";
+
     private void initView() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mContentRv = (RecyclerView) findViewById(R.id.rv_content);
         mNodeTitleTv = (TextView) findViewById(R.id.tv_node_title);
 
-        mAdapter = new NodeAdapter(this , map);
+        mAdapter = new NodeAdapter(this, map);
         mManager = new LinearLayoutManager(this);
         mContentRv.setLayoutManager(mManager);
         mContentRv.setAdapter(mAdapter);
+
+
         mContentRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -74,20 +80,22 @@ public class NodeActivity extends AppCompatActivity {
                 if (view != null) {
                     if (view.getTop() <= mTitleHeight) {
                         mNodeTitleTv.setY(-(mTitleHeight - view.getTop()));
-                        Log.d(TAG, "onScrolled: "+(mTitleHeight - view.getTop()));
+                        Log.d(TAG, "onScrolled: " + (mTitleHeight - view.getTop()));
                     } else {
                         Log.d(TAG, "onScrolled: setY(0);");
                         mNodeTitleTv.setY(0);
                     }
                 }
 
+                // 当切换到下一个的时候，悬浮的title复位。
                 if (mCurrentPosition != mManager.findFirstVisibleItemPosition()) {
+                    Log.d(TAG, "onScrolled:mCurrentPosition" + mCurrentPosition + "--------" + mManager.findFirstVisibleItemPosition());
                     mCurrentPosition = mManager.findFirstVisibleItemPosition();
                     mNodeTitleTv.setY(0);
+                    // 显示要显示的标题
                     if (map != null) {
                         mNodeTitleTv.setText(map.keyAt(mCurrentPosition));
 
-                        Log.d(TAG, "onScrolled:map.keyAt(mCurrentPosition)"+map.keyAt(mCurrentPosition));
                     }
                 }
             }

@@ -2,6 +2,7 @@ package com.example.geeknews.ui;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +18,7 @@ import android.widget.FrameLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.geeknews.R;
+import com.example.geeknews.bean.NightEvent;
 import com.example.geeknews.bean.User;
 import com.example.geeknews.contract.DailyContract;
 import com.example.geeknews.presenter.DailyPresenter;
@@ -25,9 +27,16 @@ import com.example.geeknews.ui.base.BaseMvpActivity;
 import com.example.geeknews.ui.fragment.DailyFragment;
 import com.example.geeknews.ui.fragment.GankFragment;
 import com.example.geeknews.ui.fragment.GoldFragment;
+import com.example.geeknews.ui.fragment.SettingFragment;
 import com.example.geeknews.ui.fragment.V2exMainFragment;
 import com.example.geeknews.ui.fragment.WxFragment;
 import com.example.geeknews.ui.fragment.ZhihuFragment;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +65,7 @@ public class MainActivity extends BaseActivity {
     public static final int GANK_TYPE = 2;
     public static final int GOLD_TYPE = 3;
     public static final int V2EX_TYPE = 4;
+    public static final int SETTING_TYPE = 5;
     // 当前点击的类型
     private int type;
 
@@ -67,11 +77,19 @@ public class MainActivity extends BaseActivity {
     private MenuItem lastMenuItem;
     private GoldFragment goldFragment;
     private V2exMainFragment v2exFragment;
+    private SettingFragment settingFragment;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+
+        Log.d(TAG, "onCreate: " + savedInstanceState);
+    }
 
     @Override
     protected void initView() {
         super.initView();
-
 
 
         setTitle("知乎日报");
@@ -81,32 +99,80 @@ public class MainActivity extends BaseActivity {
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         // 替换fragment 为content
-
-        // 把知乎加载到管理器 且显示
-        zhihuFragment = new ZhihuFragment();
-        wxFragment = new WxFragment();
-        gankFragment = new GankFragment();
-        goldFragment = new GoldFragment();
-        v2exFragment = new V2exMainFragment();
-
         supportFragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
 
-        fragmentTransaction
-                .add(R.id.content, zhihuFragment)
-                .add(R.id.content, wxFragment)
-                .add(R.id.content, gankFragment)
-                .add(R.id.content, goldFragment)
-                .add(R.id.content, v2exFragment)
-                .show(zhihuFragment)
-                .hide(wxFragment)
-                .hide(gankFragment)
-                .hide(goldFragment)
-                .hide(v2exFragment)
-                .commit();
-        lastFragment = zhihuFragment;
+        for (int i = 0; i < supportFragmentManager.getFragments().size(); i++) {
+            List<Fragment> fragments = supportFragmentManager.getFragments();
+            Fragment fragment = fragments.get(i);
 
-        lastMenuItem = navigation.getMenu().findItem(R.id.zhihu);
+            if (fragment instanceof ZhihuFragment) {
+                zhihuFragment = (ZhihuFragment) fragment;
+            }
+            if (fragment instanceof WxFragment) {
+                wxFragment = (WxFragment) fragment;
+            }
+            if (fragment instanceof GankFragment) {
+                gankFragment = (GankFragment) fragment;
+            }
+            if (fragment instanceof GoldFragment) {
+                goldFragment = (GoldFragment) fragment;
+            }
+            if (fragment instanceof V2exMainFragment) {
+                v2exFragment = (V2exMainFragment) fragment;
+            }
+            if (fragment instanceof SettingFragment) {
+                settingFragment = (SettingFragment) fragment;
+            }
+
+
+        }
+        // 把知乎加载到管理器 且显示
+        if (zhihuFragment == null)
+            zhihuFragment = new ZhihuFragment();
+
+        if (wxFragment == null)
+            wxFragment = new WxFragment();
+
+        if (gankFragment == null)
+            gankFragment = new GankFragment();
+
+        if (goldFragment == null)
+            goldFragment = new GoldFragment();
+
+        if (v2exFragment == null)
+            v2exFragment = new V2exMainFragment();
+
+        if (settingFragment == null)
+            settingFragment = new SettingFragment();
+
+
+        if (supportFragmentManager.getFragments().size() == 0) {
+
+            fragmentTransaction
+                    .add(R.id.content, zhihuFragment)
+                    .add(R.id.content, wxFragment)
+                    .add(R.id.content, gankFragment)
+                    .add(R.id.content, goldFragment)
+                    .add(R.id.content, v2exFragment)
+                    .add(R.id.content, settingFragment)
+                    .show(zhihuFragment)
+                    .hide(wxFragment)
+                    .hide(gankFragment)
+                    .hide(goldFragment)
+                    .hide(v2exFragment)
+                    .hide(settingFragment)
+                    .commit();
+            lastFragment = zhihuFragment;
+            lastMenuItem = navigation.getMenu().findItem(R.id.zhihu);
+        } else {
+            lastFragment = settingFragment;
+            lastMenuItem = navigation.getMenu().findItem(R.id.drawer_setting);
+
+            fragmentTransaction.show(settingFragment).commit();
+        }
+
+        lastMenuItem.setChecked(true);
 
         navigation.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -127,6 +193,9 @@ public class MainActivity extends BaseActivity {
                         break;
                     case R.id.vtex:
                         type = V2EX_TYPE;
+                        break;
+                    case R.id.drawer_setting:
+                        type = SETTING_TYPE;
                         break;
 
                 }
@@ -176,18 +245,22 @@ public class MainActivity extends BaseActivity {
                     v2exFragment = new V2exMainFragment();
                 }
                 return v2exFragment;
+            case SETTING_TYPE:
 
-
-
+                if (settingFragment == null) {
+                    settingFragment = new SettingFragment();
+                }
+                return settingFragment;
         }
 
         return null;
     }
 
     private static final String TAG = "MainActivity";
+
     public void switchFragment(MenuItem menuItem) {
         Fragment currFragment = getCurrFragment();
-        if (currFragment==lastFragment){
+        if (currFragment == lastFragment) {
             Log.d(TAG, "switchFragment: 现在就是这个页面，别点了");
             return;
         }
@@ -217,6 +290,20 @@ public class MainActivity extends BaseActivity {
     @Override
     protected int getLayout() {
         return R.layout.activity_main;
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void setNight(NightEvent night) {
+        Log.d(TAG, "setNight: " + night.isNight());
+        useNightMode(night.isNight());
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
 

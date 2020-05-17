@@ -3,6 +3,7 @@ package com.example.geeknews.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ public class V2exAdapter extends RecyclerView.Adapter<V2exAdapter.ViewHolder> {
     private LayoutInflater inflater;
     private List<V2exListBean> mList =new ArrayList<>();
 
+    private static final String TAG = "V2exAdapter";
     public V2exAdapter(Context context) {
         this.mContext = context;
 
@@ -45,12 +47,15 @@ public class V2exAdapter extends RecyclerView.Adapter<V2exAdapter.ViewHolder> {
         V2exListBean bean = mList.get(position);
 //        ImageLoader.load(mContext, bean.getImgUrl(), holder.ivTopicFace);
 
+        Log.d(TAG, "onBindViewHolder: "+bean.getImgUrl());
         Glide.with(mContext).load(bean.getImgUrl()).into(holder.ivTopicFace);
-        holder.tvTopicName.setText(bean.getName());
-        holder.tvTopicTips.setText(bean.getUpdateTime() + " • 最后回复 " + bean.getLastUser());
-        holder.tvTopicComment.setText(String.valueOf(bean.getCommentNum()));
-        holder.tvTopicNode.setText(bean.getNode());
         holder.tvTopicTitle.setText(bean.getTitle());
+
+
+//        holder.tvTopicName.setText(bean.getName());
+//        holder.tvTopicTips.setText(bean.getUpdateTime() + " • 最后回复 " + bean.getLastUser());
+//        holder.tvTopicComment.setText(String.valueOf(bean.getCommentNum()));
+//        holder.tvTopicNode.setText(bean.getNode());
 
     }
 

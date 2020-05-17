@@ -7,7 +7,7 @@
 
             <item
                 android:id="@+id/zhihu"
-                android:checked="true"
+
                 android:checkable="true"
                 android:icon="@mipmap/ic_drawer_zhihu"
                 android:title="知乎日报" />
@@ -31,6 +31,19 @@
                 android:checkable="true"
                 android:icon="@mipmap/ic_drawer_vtex"
                 android:title="V2EX" />
+
+        </menu>
+    </item>
+
+    <item android:title="@string/drawer_group_options">
+        <menu>
+
+            <item
+                android:id="@+id/drawer_setting"
+                android:checked="false"
+                android:icon="@mipmap/ic_drawer_setting"
+                android:checkable="true"
+                android:title="@string/drawer_setting"/>
 
         </menu>
     </item>

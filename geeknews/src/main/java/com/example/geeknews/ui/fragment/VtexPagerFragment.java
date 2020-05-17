@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.example.geeknews.R;
-import com.example.geeknews.adapter.TopicAdapter;
 import com.example.geeknews.adapter.V2exAdapter;
 import com.example.geeknews.bean.V2exListBean;
 import com.example.geeknews.contract.V2exContract;
@@ -17,27 +16,17 @@ import com.example.geeknews.utils.Constants;
 import java.util.List;
 
 public class VtexPagerFragment extends BaseMvpFragment<V2exPresenter> implements V2exContract.View {
+
     private RecyclerView mMainView;
     private SwipeRefreshLayout mRefreshSwipe;
-    private V2exAdapter mAdapter;
-
-    @Override
-    public void successUI(List<V2exListBean> v2exListBeanList) {
-        mAdapter.updateData(v2exListBeanList);
-    }
-
-    @Override
-    public void errorUI(String error) {
-
-    }
+    private V2exAdapter v2exAdapter;
 
     @Override
     protected void initViewFragment(View itemView) {
         mMainView = (RecyclerView) itemView.findViewById(R.id.view_main);
-        mRefreshSwipe = (SwipeRefreshLayout) itemView.findViewById(R.id.swipe_refresh);
-        mAdapter = new V2exAdapter(getActivity() );
         mMainView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mMainView.setAdapter(mAdapter);
+        v2exAdapter = new V2exAdapter(getActivity());
+        mMainView.setAdapter(v2exAdapter);
     }
 
     @Override
@@ -58,4 +47,13 @@ public class VtexPagerFragment extends BaseMvpFragment<V2exPresenter> implements
     }
 
 
+    @Override
+    public void successUI(List<V2exListBean> v2exListBeanList) {
+        v2exAdapter.updateData(v2exListBeanList);
+    }
+
+    @Override
+    public void errorUI(String error) {
+
+    }
 }
