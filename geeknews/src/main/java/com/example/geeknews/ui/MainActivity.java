@@ -31,6 +31,8 @@ import com.example.geeknews.ui.fragment.SettingFragment;
 import com.example.geeknews.ui.fragment.V2exMainFragment;
 import com.example.geeknews.ui.fragment.WxFragment;
 import com.example.geeknews.ui.fragment.ZhihuFragment;
+import com.example.geeknews.utils.Constants;
+import com.example.geeknews.utils.SPUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -80,17 +82,12 @@ public class MainActivity extends BaseActivity {
     private SettingFragment settingFragment;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
-
-        Log.d(TAG, "onCreate: " + savedInstanceState);
-    }
-
-    @Override
     protected void initView() {
         super.initView();
 
+        boolean aBoolean = SPUtils.getInstance().getBoolean(Constants.IS_NIGHT);
+
+        useNightMode(aBoolean);
 
         setTitle("知乎日报");
         setSupportActionBar(toolbar);
@@ -293,18 +290,27 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void setNight(NightEvent night) {
-        Log.d(TAG, "setNight: " + night.isNight());
-        useNightMode(night.isNight());
-    }
+    /**
+     * eventbus  注册  取消注册  接收
+     */
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void updateNight(NightEvent nightEvent){
+        boolean night = nightEvent.isNight();
+
+        useNightMode(night);
+
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        EventBus.getDefault().register(this);
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
-
 }

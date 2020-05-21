@@ -33,12 +33,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void useNightMode(boolean isNight) {
         if (isNight) {
-            AppCompatDelegate.setDefaultNightMode(
-                    AppCompatDelegate.MODE_NIGHT_YES);
+            AppCompatDelegate.setDefaultNightMode(  AppCompatDelegate.MODE_NIGHT_YES);
         } else {
             AppCompatDelegate.setDefaultNightMode(
                     AppCompatDelegate.MODE_NIGHT_NO);
         }
         recreate();
     }
+
 }

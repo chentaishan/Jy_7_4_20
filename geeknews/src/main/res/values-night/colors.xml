@@ -20,4 +20,9 @@
     <color name="comment_at">#3289b3</color>
     <color name="gold_title">#6B6D72</color>
     <color name="node_bg">#0F1010</color>
+
+
+    <color name="setting_fragment_bg">#6B6D72</color>
+
+
 </resources>

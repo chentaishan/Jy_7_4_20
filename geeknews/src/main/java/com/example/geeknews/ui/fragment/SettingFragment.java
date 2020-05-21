@@ -1,9 +1,6 @@
 package com.example.geeknews.ui.fragment;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatCheckBox;
-import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -16,45 +13,48 @@ import com.example.geeknews.utils.SPUtils;
 import org.greenrobot.eventbus.EventBus;
 
 public class SettingFragment extends BaseFragment {
+
     private AppCompatCheckBox mSettingNightCb;
-
-
 
     @Override
     protected void initData() {
 
     }
 
-    private static final String TAG = "SettingFragment";
     @Override
-    protected void initView(View root) {
+    protected void initView(View itemView) {
 
-        mSettingNightCb = (AppCompatCheckBox) root.findViewById(R.id.cb_setting_night);
+        //获取默认的夜间模式的状态
+        final boolean status = SPUtils.getInstance().getBoolean(Constants.IS_NIGHT, false);
 
-        final boolean aBoolean = SPUtils.getInstance().getBoolean(Constants.IS_NIGHT);
+        mSettingNightCb = (AppCompatCheckBox) itemView.findViewById(R.id.cb_setting_night);
 
-        mSettingNightCb.setChecked(aBoolean);
+        mSettingNightCb.setChecked(status);
 
-
+//        mSettingNightCb.setOnCheckedChangeListener();
         mSettingNightCb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onCheckedChanged: "+aBoolean);
-                SPUtils.getInstance().put(Constants.IS_NIGHT,!aBoolean);;
 
+
+                final boolean isNight = SPUtils.getInstance().getBoolean(Constants.IS_NIGHT, false);
+
+                // 状态的保存  文件保存 sharedPrefrences(工具类)
+                SPUtils.getInstance().put(Constants.IS_NIGHT,!isNight);
+
+
+                //发送eventbus ，通过UI切换夜间模式
                 NightEvent nightEvent = new NightEvent();
-                nightEvent.setNight(!aBoolean);
+                nightEvent.setNight(!isNight);
                 EventBus.getDefault().post(nightEvent);
+
             }
         });
-
-
 
     }
 
     @Override
     protected int getLayout() {
-        return R.layout.setting_fragment
-                ;
+        return R.layout.setting_fragment;
     }
 }
